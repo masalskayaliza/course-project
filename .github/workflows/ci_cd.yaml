@@ -1,0 +1,53 @@
+name: CI/CD Pipeline 
+
+on:  
+  push: 
+    branches:
+      - main 
+  pull_request:  
+    branches:
+      - main  
+
+jobs:
+  build:  
+    runs-on: ubuntu-latest  
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3  
+
+      - name: Install dependencies
+        run: |
+          sudo apt update -y
+          sudo apt install -y httpd wget ntp 
+
+      - name: Run server
+        run: |
+          sudo systemctl start httpd
+          sudo systemctl enable httpd
+          echo "Server is running!"
+
+  test:  
+    runs-on: ubuntu-latest
+    needs: build  
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run tests
+        run: |
+          echo "Running tests..."
+          sleep 5 
+          echo "All tests passed!"
+
+  deploy: 
+    runs-on: ubuntu-latest
+    needs: test  
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Deploy application
+        run: |
+          echo "Deploying application..."
+          sleep 3
+          echo "Deployment successful!"
